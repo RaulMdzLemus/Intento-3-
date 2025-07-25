@@ -1,6 +1,9 @@
 // Crear el mapa centrado en CDMX
 var map = L.map('map').setView([19.4326, -99.1332], 13);
-
+// Añadir buscador al mapa
+L.Control.geocoder({
+    defaultMarkGeocode: true
+}).addTo(map);
 // Agregar capa base de OpenStreetMap
 L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
   attribution: '© OpenStreetMap contributors'
