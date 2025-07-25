@@ -16,7 +16,7 @@ var alcaldiasLayer = L.layerGroup();
 var prediosLayer = L.layerGroup();
 
 // Cargar alcaldías con popup de propiedades
-fetch('data/PREDIOS_SERVIMET_4326.geojson')
+fetch('data/PREDIOS%SERVIMET%4326.geojson')
   .then(res => res.json())
   .then(data => {
     L.geoJSON(data, {
