@@ -11,7 +11,7 @@ var alcaldiasLayer = L.layerGroup();
 var prediosLayer = L.layerGroup();
 
 // Cargar alcaldías
-fetch('/data/ALC_REPROJECT.geojson')
+fetch('data/ALC_REPROJECT.geojson')
   .then(res => res.json())
   .then(data => {
     var alcaldiasGeo = L.geoJSON(data, {
@@ -28,7 +28,7 @@ fetch('/data/ALC_REPROJECT.geojson')
   });
 
 // Cargar predios
-fetch('/data/BOLSAINMOBILIARIA_SERVIMET.geojson')
+fetch('data/BOLSAINMOBILIARIA_SERVIMET.geojson')
   .then(res => res.json())
   .then(data => {
     var prediosGeo = L.geoJSON(data, {
