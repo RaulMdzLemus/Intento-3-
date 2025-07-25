@@ -13,6 +13,11 @@ L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
 var alcaldiasLayer = L.layerGroup();
 var prediosLayer = L.layerGroup();
 
+// Agregar buscador por direcciones (Leaflet Control Geocoder)
+L.Control.geocoder({
+  defaultMarkGeocode: true
+}).addTo(map);
+
 // Cargar alcaldías
 fetch('data/ALC_REPROJECT.geojson')
   .then(res => res.json())
