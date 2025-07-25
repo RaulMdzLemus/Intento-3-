@@ -11,7 +11,7 @@ var alcaldiasLayer = L.layerGroup();
 var prediosLayer = L.layerGroup();
 
 // Cargar alcaldías
-fetch('./data/ALC_REPROJECT.geojson')
+fetch('/data/ALC_REPROJECT.geojson')
   .then(res => res.json())
   .then(data => {
     var alcaldiasGeo = L.geoJSON(data, {
@@ -70,5 +70,5 @@ alcaldiasLayer.addTo(map);
 // Control de capas
 L.control.layers(null, {
   "Alcaldías CDMX": alcaldiasLayer,
-  "Predios SERVIMET": prediosLayer
+  "BOLSA_INMOBILIARIA": prediosLayer
 }).addTo(map);
