@@ -35,25 +35,42 @@ fetch('data/ALC_REPROJECT.geojson')
 fetch('data/BOLSAINMOBILIARIA_SERVIMET.geojson')
   .then(res => res.json())
   .then(data => {
-    const capaPredios = L.geoJSON(data, {
+    const prediosGeo = L.geoJSON(data, {
+      onEachFeature: (feature, layer) => {
+        // Popup con todas las propiedades
+        let contenido = '<b>Predio:</b><br>';
+        for (let clave in feature.properties) {
+          contenido += `<b>${clave}:</b> ${feature.properties[clave]}<br>`;
+        }
+        layer.bindPopup(contenido);
+      },
       style: {
-        color: 'orange',
+        color: '#ff5733',
         weight: 1,
         fillOpacity: 0.3
-      },
-      onEachFeature: function (feature, layer) {
-        let popup = '';
-        for (let prop in feature.properties) {
-          popup += `<b>${prop}:</b> ${feature.properties[prop]}<br>`;
-        }
-        layer.bindPopup(popup);
       }
     });
-    capaPredios.addTo(prediosLayer);
-  });
 
-// Agregar control de capas (encendido y apagado)
-L.control.layers(null, {
-  "Alcaldías CDMX": alcaldiasLayer,
-  "Predios SERVIMET": prediosLayer
-}).addTo(map);
+    prediosGeo.addTo(prediosLayer);
+
+    // Buscador vinculado a un campo del GeoJSON (ej. "NOMBRE" o "ID")
+    const searchControl = new L.Control.Search({
+      layer: prediosGeo,
+      propertyName: 'NOMBRE', // CAMBIA esto por el campo correcto de tu GeoJSON
+      marker: false,
+      moveToLocation: function (latlng, title, map) {
+        map.setView(latlng, 18);
+      }
+    });
+
+    // Al encontrar el predio, resalta y abre popup
+    searchControl.on('search:locationfound', function(e) {
+      e.layer.setStyle({ fillColor: '#ffff00', color: '#ff0000' });
+      if (e.layer._popup) e.layer.openPopup();
+      setTimeout(() => {
+        prediosGeo.resetStyle(e.layer);
+      }, 2000);
+    });
+
+    map.addControl(searchControl);
+  });
