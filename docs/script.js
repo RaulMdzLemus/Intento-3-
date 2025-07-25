@@ -1,44 +1,37 @@
 // Crear el mapa centrado en CDMX
 var map = L.map('map').setView([19.4326, -99.1332], 13);
-// Añadir buscador al mapa
-L.Control.geocoder({
-    defaultMarkGeocode: true
-}).addTo(map);
+
 // Agregar capa base de OpenStreetMap
 L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
   attribution: '© OpenStreetMap contributors'
+}).addTo(map);
+
+// Añadir buscador al mapa
+L.Control.geocoder({
+  defaultMarkGeocode: true
 }).addTo(map);
 
 // Crear grupos vacíos
 var alcaldiasLayer = L.layerGroup();
 var prediosLayer = L.layerGroup();
 
-// Agregar buscador por direcciones (Leaflet Control Geocoder)
-L.Control.geocoder({
-  defaultMarkGeocode: true
-}).addTo(map);
-
-// Cargar alcaldías
+// Cargar alcaldías con nombres visibles
 fetch('data/ALC_REPROJECT.geojson')
   .then(res => res.json())
   .then(data => {
     L.geoJSON(data, {
-      onEachFeature: (f, l) => l.bindPopup(f.properties.nombre || '')
-    }).addTo(alcaldiasLayer);
-  });
-
-// Cargar predios
-fetch('data/PREDIOS SERVIMET 4326.geojson')
-  .then(res => res.json())
-  .then(data => {
-    L.geoJSON(data).addTo(prediosLayer);
-  });
-
-// Agregar solo una capa por defecto
-alcaldiasLayer.addTo(map);
-
-// Control de capas (para encender/apagar)
-L.control.layers(null, {
-  "Alcaldías CDMX": alcaldiasLayer,
-  "Predios SERVIMET": prediosLayer
-}).addTo(map);
+      onEachFeature: (feature, layer) => {
+        const nombre = feature.properties.nombre || '';
+        layer.bindPopup(nombre);
+        // Mostrar nombre como etiqueta permanente
+        layer.bindTooltip(nombre, {
+          permanent: true,
+          direction: 'center',
+          className: 'nombre-etiqueta'
+        }).openTooltip();
+      },
+      style: {
+        color: '#3388ff',
+        weight: 1,
+        fillOpacity: 0.1
+      }
