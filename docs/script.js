@@ -56,7 +56,7 @@ fetch('data/BOLSAINMOBILIARIA_SERVIMET.geojson')
     // Buscador vinculado a un campo del GeoJSON (ej. "NOMBRE" o "ID")
     const searchControl = new L.Control.Search({
       layer: prediosGeo,
-      propertyName: 'NOMBRE', // CAMBIA esto por el campo correcto de tu GeoJSON
+      propertyName: 'Name', // CAMBIA esto por el campo correcto de tu GeoJSON
       marker: false,
       moveToLocation: function (latlng, title, map) {
         map.setView(latlng, 18);
