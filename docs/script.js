@@ -1,74 +1,59 @@
-// Crear el mapa
+// Crear el mapa centrado en CDMX
 var map = L.map('map').setView([19.4326, -99.1332], 13);
 
-// Capa base
+// Añadir capa base de OpenStreetMap
 L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
   attribution: '© OpenStreetMap contributors'
 }).addTo(map);
 
-// Grupos para capas
-var alcaldiasLayer = L.layerGroup();
+// Crear grupos de capas
+var alcaldiasLayer = L.layerGroup().addTo(map);
 var prediosLayer = L.layerGroup();
 
-// Cargar alcaldías
+// Cargar ALCALDÍAS
 fetch('data/ALC_REPROJECT.geojson')
   .then(res => res.json())
   .then(data => {
-    var alcaldiasGeo = L.geoJSON(data, {
-      onEachFeature: (feature, layer) => {
-        let contenido = '<b>Alcaldía:</b><br>';
-        for (let clave in feature.properties) {
-          contenido += `<b>${clave}:</b> ${feature.properties[clave]}<br>`;
-        }
-        layer.bindPopup(contenido);
+    const capaAlcaldias = L.geoJSON(data, {
+      style: {
+        color: 'blue',
+        weight: 1,
+        fillOpacity: 0.1
       },
-      style: { color: '#3388ff', weight: 1, fillOpacity: 0.1 }
-    });
-    alcaldiasGeo.addTo(alcaldiasLayer);
-  });
-
-// Cargar predios
-fetch('data/PREDIOS SERVIMET 4326.geojson')
-  .then(res => res.json())
-  .then(data => {
-    var prediosGeo = L.geoJSON(data, {
-      onEachFeature: (feature, layer) => {
-        let contenido = '<b>Predio:</b><br>';
-        for (let clave in feature.properties) {
-          contenido += `<b>${clave}:</b> ${feature.properties[clave]}<br>`;
+      onEachFeature: function (feature, layer) {
+        let popup = '';
+        for (let prop in feature.properties) {
+          popup += `<b>${prop}:</b> ${feature.properties[prop]}<br>`;
         }
-        layer.bindPopup(contenido);
-      },
-      style: { color: '#ff5733', weight: 1, fillOpacity: 0.3 }
-    });
-    prediosGeo.addTo(prediosLayer);
-
-    // ---- BUSCADOR EN PREDIOS ----
-    var searchControl = new L.Control.Search({
-      layer: prediosGeo,
-      propertyName: 'NOMBRE', // CAMBIA por el campo a buscar (ej: "ID", "CLAVE")
-      marker: false,
-      moveToLocation: function(latlng, title, map) {
-        map.setView(latlng, 18);
+        layer.bindPopup(popup);
       }
     });
-
-    searchControl.on('search:locationfound', function(e) {
-      e.layer.setStyle({ fillColor: '#ffff00', color: '#ff0000' });
-      if (e.layer._popup) e.layer.openPopup();
-      setTimeout(() => {
-        prediosGeo.resetStyle(e.layer);
-      }, 2000);
-    });
-
-    map.addControl(searchControl);
+    capaAlcaldias.addTo(alcaldiasLayer);
   });
 
-// Agregar capa inicial
-alcaldiasLayer.addTo(map);
+// Cargar PREDIOS
+fetch('data/BOLSAINMOBILIARIA_SERVIMET.geojson')
+  .then(res => res.json())
+  .then(data => {
+    const capaPredios = L.geoJSON(data, {
+      style: {
+        color: 'orange',
+        weight: 1,
+        fillOpacity: 0.3
+      },
+      onEachFeature: function (feature, layer) {
+        let popup = '';
+        for (let prop in feature.properties) {
+          popup += `<b>${prop}:</b> ${feature.properties[prop]}<br>`;
+        }
+        layer.bindPopup(popup);
+      }
+    });
+    capaPredios.addTo(prediosLayer);
+  });
 
-// Control de capas
+// Agregar control de capas (encendido y apagado)
 L.control.layers(null, {
   "Alcaldías CDMX": alcaldiasLayer,
-  "BOLSA_INMOBILIARIA": prediosLayer
+  "Predios SERVIMET": prediosLayer
 }).addTo(map);
