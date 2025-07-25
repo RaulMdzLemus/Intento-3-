@@ -28,7 +28,7 @@ fetch('/data/ALC_REPROJECT.geojson')
   });
 
 // Cargar predios
-fetch('/data/BOLSA_INMOBILIARIA.geojson')
+fetch('/data/BOLSAINMOBILIARIA_SERVIMET.geojson')
   .then(res => res.json())
   .then(data => {
     var prediosGeo = L.geoJSON(data, {
